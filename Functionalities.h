@@ -49,4 +49,39 @@ void printMainMenu(){
         <<"[4] View City map : "<<endl;
 }
 
+void printExit(){
+    cout<<"--------------------------------------------Thanks for using our program---------------------------------------------\n\n";
+    cout<<"-------------------------------------------------------Credits-------------------------------------------------------\n\n";
+    cout<<"--------------------------------------------------Salah eldin Elsayed------------------------------------------------\n\n";
+    cout<<"-----------------------------------------------------Hussein Sayed---------------------------------------------------\n\n";
+    cout<<"--------------------------------------------------Abdulrahman Abogendia----------------------------------------------\n\n";
+    cout<<"-----------------------------------------------------Fouad Hashesh---------------------------------------------------\n\n";
+    cout<<"-------------------------------------Under the Supervision of Dr. Hala Zayed------------------------------------\n\n";
+    cout<<"---------------------------------------------------------&-----------------------------------------------------\n\n";
+    cout<<"----------------------------------------------------Eng. Rameez------------------------------------------------\n\n";
+
+}
+void printTrafficMenu(){
+    cout<<"[1] View shortest path : "<<endl
+        <<"[2] View maximum flow : "<<endl
+        <<"[3] View Minimum cost Graph : "<<endl
+        <<"[4] Build Road Network"<<endl
+        <<"[5] View map"<<endl;
+}
+void printPowerMenu(){
+    cout<<"[1] View shortest path : "<<endl
+        <<"[2] View maximum flow : "<<endl
+        <<"[3] View Minimum cost Graph : "<<endl
+        <<"[4] Build Power Network"<<endl
+        <<"[5] View map"<<endl;
+}
+void printNetworkMenu(){
+    cout<<"[1] View shortest path : "<<endl
+        <<"[2] View maximum flow : "<<endl
+        <<"[3] View Minimum cost Graph : "<<endl
+        <<"[4] Build Network Network"<<endl
+        <<"[5] View map"<<endl;
+}
+
+
 #endif //START_FUNCTIONALITIES_H
