@@ -7,6 +7,7 @@ using namespace std;
 #ifndef SMART_CITY_PROJECT_MST_H
 #define SMART_CITY_PROJECT_MST_H
 
+
 // DSU class for union-find operations
 class DSU {
     vector<int> parent, rank;
@@ -49,6 +50,7 @@ public:
     }
 
 };
+
 
 vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges) { //time complexity is almost O(m log m) where m is the number of edges
     DSU dsu(n);
