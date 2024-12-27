@@ -1,6 +1,8 @@
 #include <iostream>
 #include "FordFulkerson.h"
+#include "MST.h"
 using namespace std;
+
 vector<vector<int> >adj={
         {0,10,10,0,0,0},
         {},
@@ -9,8 +11,9 @@ vector<vector<int> >adj={
         {0, 0, 6, 0, 0, 10},
         {0, 0, 0, 0, 0, 0}
 };
+
 int main() {
-   cout<<ford_fulkerson(adj,0,5)<<endl;
+  /* cout<<ford_fulkerson(adj,0,5)<<endl;
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 6; ++j) {
             cout<<adj[i][j]<<" ";
@@ -84,6 +87,25 @@ int main() {
                     {00, 00, 00, 00, 00,  7, 00,  5, 00, 00, 00, 00, 00, 00, 00, 00, 00}, // 16
     };
 
-    cout << road_network[0][0] << power_network[0][0] << DC_network[0][0];
+    cout << road_network[0][0] << power_network[0][0] << DC_network[0][0];*/
+
+
+
+    /*******************Test MST******************************************************/
+    int n = 5;
+    vector<vector<int>> graph = {
+            {0, 1, 10},
+            {1, 2, 5},
+            {2, 3, 8},
+            {3, 4, 12},
+            {4, 1, 7}
+    };
+
+    
+    vector<vector<int>>mst=kruskalMST(n, graph);
+    for (auto &edge:mst) {
+        cout<<edge[0]<<"--"<<edge[1]<<endl;
+    }
+
     return 0;
 }
