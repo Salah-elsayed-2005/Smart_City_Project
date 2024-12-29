@@ -1,5 +1,6 @@
 #include <iostream>
-
+#include "FordFulkerson.h"
+#include "MST.h"
 using namespace std;
 #ifndef START_FUNCTIONALITIES_H
 #define START_FUNCTIONALITIES_H
@@ -64,23 +65,35 @@ void printExit(){
 void printTrafficMenu(){
     cout<<"[1] View shortest path : "<<endl
         <<"[2] View maximum flow : "<<endl
-        <<"[3] View Minimum cost Graph : "<<endl
+       // <<"[3] View Minimum cost Graph : "<<endl
         <<"[4] Build Road Network"<<endl
         <<"[5] View map"<<endl;
 }
 void printPowerMenu(){
     cout<<"[1] View shortest path : "<<endl
         <<"[2] View maximum flow : "<<endl
-        <<"[3] View Minimum cost Graph : "<<endl
+       // <<"[3] View Minimum cost Graph : "<<endl
         <<"[4] Build Power Network"<<endl
         <<"[5] View map"<<endl;
 }
 void printNetworkMenu(){
     cout<<"[1] View shortest path : "<<endl
         <<"[2] View maximum flow : "<<endl
-        <<"[3] View Minimum cost Graph : "<<endl
+      //  <<"[3] View Minimum cost Graph : "<<endl
         <<"[4] Build Network Network"<<endl
         <<"[5] View map"<<endl;
+}
+
+/////////////////////////////////////////
+///////// Ford Fulkerson functions //////
+/////////////////////////////////////////
+void ViewMaxFlow(vector<vector<int> >capacity){
+    int source,sink;
+    cout<<"Please enter the source index: ";
+    cin>>source;
+    cout<<"Please enter the sink index: ";
+    cin>>sink;
+    cout<<"The maximum flow to point "<<sink<<" from point "<<source<<" is :"<<ford_fulkerson(capacity,source,sink)<<endl;
 }
 
 
