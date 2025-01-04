@@ -1,14 +1,14 @@
-//
-// Created by Se7s on 12/26/2024.
-//
+#ifndef MST_H
+#define MST_H
 
-#include <bits/stdc++.h>
+#include <vector>
+#include <algorithm>
 using namespace std;
-#ifndef SMART_CITY_PROJECT_MST_H
-#define SMART_CITY_PROJECT_MST_H
 
+struct MSTState {
+    vector<pair<int, int>> mstEdges; // Edges in the MST so far
+};
 
-// DSU class for union-find operations
 class DSU {
     vector<int> parent, rank;
 public:
@@ -19,24 +19,17 @@ public:
             parent[i] = i;
     }
 
-    // Find with path compression
-    int find(int x) {       //time complexity for this function is O(α(n))
+    int find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    // Detect cycle function
-    bool detectCycle(int x, int y) {    //time complexity for this function is O(α(n))
-        return find(x) == find(y);  //have the same parent
-    }
-
-    // Union by rank with cycle detection
-    bool unite(int x, int y) {  //time complexity for this function is O(α(n))
-        if (detectCycle(x, y)) return false; // Cycle detected
-
+    bool unite(int x, int y) {
         int rootX = find(x);
         int rootY = find(y);
+
+        if (rootX == rootY) return false;
 
         if (rank[rootX] > rank[rootY])
             parent[rootY] = rootX;
@@ -48,27 +41,25 @@ public:
         }
         return true;
     }
-
 };
 
-
-vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges) { //time complexity is almost O(m log m) where m is the number of edges
+vector<MSTState> kruskalMST(int n, vector<vector<int>> &edges) {
     DSU dsu(n);
-    // Sort edges by weight
     sort(edges.begin(), edges.end(), [](const vector<int>& a, const vector<int>& b) {
-        return a[2] < b[2]; //a[2] and b[2] to get the edge weight
+        return a[2] < b[2];
     });
 
-    vector<vector<int>> mst;
+    vector<MSTState> states;
+    vector<pair<int, int>> mstEdges;
 
-    for (const auto& edge : edges) {
-        int u = edge[0], v = edge[1];
-        if (dsu.unite(u, v)) {  // include them in the MST only if they don't form a cycle
-            mst.push_back(edge);
+    for (const auto &edge : edges) {
+        if (dsu.unite(edge[0], edge[1])) {
+            mstEdges.push_back({edge[0], edge[1]});
+            states.push_back({mstEdges});
         }
     }
 
-    return mst;
+    return states;
 }
 
-#endif //SMART_CITY_PROJECT_MST_H
+#endif
