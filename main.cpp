@@ -1,4 +1,5 @@
 #include <iostream>
+#include "CityMap.h"
 #include "FordFulkerson.h"
 #include "MST.h"
 #include "Functionalities.h"
