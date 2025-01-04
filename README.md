@@ -1,4 +1,4 @@
-﻿# # Instructions to Build and Run the Project on Windows
+﻿# Instructions to Build and Run the Project on Windows
 
 ## Prerequisites
 
