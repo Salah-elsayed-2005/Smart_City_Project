@@ -4,31 +4,29 @@
 using namespace std;
 #ifndef START_FUNCTIONALITIES_H
 #define START_FUNCTIONALITIES_H
-#if defined(_WIN32) || defined(_WIN64)
-const std::string CLEAR_COMMAND = "cls";
-#else
-const std::string CLEAR_COMMAND = "clear";
-#endif
+
+
 bool endOfProgram= false;
 bool backToTheMainMenu=false;
 
 
-bool checkBack(){
-    short back=1;
+void checkBack(){
+    backToTheMainMenu=false;
+    short back;
     do {
-        cout << "\n\n[1] Back to the last page" << endl << "[2] Back to the main menu\n\n";
-        cout << "Please enter your choice : ";
+        cout << "\n\n[1] Back to the last page\n"
+            << "[2] Back to the main menu\n\n";
+        cout << "Please Enter Your Choice : ";
         cin >> back;
-        if (back == 2)
-            backToTheMainMenu = true;
+        if (back == 2) backToTheMainMenu = true;
     }while(back!=1 && back!=2);
-    return (back==2);
 }
 
 /*
  Checkback() function is used all over the other options to check if the user wants to either go back to the previous menu or to go back to the main menu
  It's only used of there exists a previous menu not the main menu
  */
+
 bool checkClose(){
     short back=1;
     do {
@@ -44,6 +42,7 @@ bool checkClose(){
 /////////////////////////////////////////
 ///////// Ford Fulkerson functions //////
 /////////////////////////////////////////
+
 void ViewMaxFlow(vector<vector<int> >capacity){
     int source,sink;
     cout<<"Please enter the source index: ";
@@ -52,9 +51,11 @@ void ViewMaxFlow(vector<vector<int> >capacity){
     cin>>sink;
     cout<<"The maximum flow to point "<<sink<<" from point "<<source<<" is :"<<ford_fulkerson(capacity,source,sink)<<endl;
 }
+
 /////////////////////////////////////////
 ///////// MST functions /////////////////
 /////////////////////////////////////////
+
 void BuildMst(){
     vector<vector<int>> graph;
     cout<<"Please enter the graph to build: ";
@@ -65,7 +66,7 @@ void BuildMst(){
 }
 
 void printHeader(){
-    cout << "Welcome to our Smart City Project. Please choose one of the following options:" << endl;
+    cout << "============================== Welcome To The Smart City ==================================\n" << endl;
 }
 
 void printMainMenu(){
@@ -73,11 +74,11 @@ void printMainMenu(){
         <<"[2] Power Network "<<endl
         <<"[3] DC Network "<<endl
         <<"[4] View City map "<<endl
-        <<"[5] Credits "<<endl;
+        <<"[5] Exit "<<endl;
 }
 
 void printExit(){
-    system(CLEAR_COMMAND.c_str()); //clear screen
+    system("cls");
     cout<<"--------------------------------------------Thanks for using our program---------------------------------------------\n\n";
     cout<<"-------------------------------------------------------Credits-------------------------------------------------------\n\n";
     cout<<"--------------------------------------------------Salah eldin Elsayed------------------------------------------------\n\n";
@@ -89,55 +90,109 @@ void printExit(){
     cout<<"----------------------------------------------------Eng. Rameez------------------------------------------------\n\n";
 
 }
+
 void printTrafficMenu(){
     cout<<"[1] View shortest path "<<endl
-        <<"[2] View maximum flow "<<endl
-        <<"[3] View Emergency route "<<endl // ford fulkerson
-        <<"[4] Build Road Network "<<endl
-        <<"[5] View map "<<endl;
+        <<"[2] View Emergency route "<<endl // ford fulkerson
+        <<"[3] View map "<<endl
+        <<"[4] Back";
 }
+
 void printPowerMenu(){
-    cout<<"[1] View shortest path "<<endl
-        <<"[2] View maximum flow "<<endl
-        <<"[3] View Emergency route "<<endl // floyd warshall
-        <<"[4] Build Power Network "<<endl
-        <<"[5] View map "<<endl;
+    cout<<"[1] View Emergency route "<<endl // floyd warshall
+        <<"[2] Build Power Network "<<endl
+        <<"[3] View map "<<endl
+        <<"[4] Back";
 }
+
 void printNetworkMenu(){
-    cout<<"[1] View shortest path "<<endl
-        <<"[2] View maximum flow "<<endl
-        <<"[3] View Emergency route "<<endl // floyd warshall
-        <<"[4] Build Network Network "<<endl
-        <<"[5] View map "<<endl;
+    cout<<"[1] View Emergency route "<<endl // floyd warshall
+        <<"[2] Build Power Network "<<endl
+        <<"[3] View map "<<endl
+        <<"[4] Back";
 }
 
 void TrafficMenu(){
     short choice;
     do{
-        system(CLEAR_COMMAND.c_str()); //clear screen
-        cout<<"===Traffic Management menu=== "<<endl;
+        system("cls");
+        cout<<"========================= Traffic Management Menu ============================ "<<endl;
         printTrafficMenu();
-        cout<<"Enter your choice : ";
+        cout<<"\nEnter Your Choice : ";
         cin>>choice;
-        if (choice<1 || choice > 5) {
+        if (choice<1 || choice > 4) {
             continue;
         }
         if (choice == 1) {
             //A*menu
         }
         else if (choice == 2) {
-            //ViewMaxFlow();
-        }
-        else if (choice==3){
             //ViewEmergencyMenu;
         }
-        else if (choice==4){
-            //BuildMSTMenu
-        }
-        else if (choice==5){
+        else if (choice==3){
             //printMap
         }
-        if(choice>0 && choice<7)
+        else if(choice==4){
+            break;
+        }
+        if(choice>0 && choice<5)
+            checkBack();    //check if the user want to back to the last menu
+
+    }while(!backToTheMainMenu); //check if the user want to back to the main menu
+}
+
+void PowerMenu(){
+    short choice;
+    do{
+        system("cls");
+        cout<<"========================= Power Network Menu ============================ "<<endl;
+        printPowerMenu();
+        cout<<"\nEnter Your Choice : ";
+        cin>>choice;
+        if (choice<1 || choice > 4) {
+            continue;
+        }
+        if (choice == 1) {
+            //EmergencyMenu
+        }
+        else if (choice == 2) {
+            //BuildMST;
+        }
+        else if (choice==3){
+            //ViewMap;
+        }
+        else if(choice==4){
+            break;
+        }
+        if(choice>0 && choice<5)
+            checkBack();    //check if the user want to back to the last menu
+
+    }while(!backToTheMainMenu); //check if the user want to back to the main menu
+}
+
+void DCNetworkMenu(){
+    short choice;
+    do{
+        system("cls");
+        cout<<"========================= DC Network Menu ============================ "<<endl;
+        printNetworkMenu();
+        cout<<"\nEnter Your Choice : ";
+        cin>>choice;
+        if (choice<1 || choice > 4) continue;
+
+        if (choice == 1) {
+            //EmergencyMenu
+        }
+        else if (choice == 2) {
+            //BuildMST;
+        }
+        else if (choice==3){
+            //ViewMap;
+        }
+        else if(choice==4){
+            break;
+        }
+        if(choice>0 && choice<5)
             checkBack();    //check if the user want to back to the last menu
 
     }while(!backToTheMainMenu); //check if the user want to back to the main menu
@@ -145,31 +200,34 @@ void TrafficMenu(){
 
 void mainmenu(){
     printHeader();
-    short choice=1;
+    this_thread::sleep_for(chrono::seconds(3));
+    short choice;
     do{
-        system(CLEAR_COMMAND.c_str()); //clear screen
+        system("cls");
         printMainMenu();
-        cout<<"\nPlease enter your choice : ";
+        cout<<"\nPlease Enter Your Choice : ";
         cin>>choice;
+
+        if(choice<1 || choice>5) continue;
+
         if (choice==1)
             TrafficMenu();
-        if (choice==2)
-            //DCmenu();
-        if (choice==3)
-            //Networkmenu();
+        else if (choice==2)
+            PowerMenu();
+        else if (choice==3)
+            DCNetworkMenu();
         if (choice==4)
-            //emergencymenu();
-        system(CLEAR_COMMAND.c_str()); //clear screen
+            //ViewCityMap();
+
         if(backToTheMainMenu) { //check if the user want to back to the main menu
-            choice = 1;
             backToTheMainMenu=false;
         }
         if(endOfProgram)    //if the user want to end the program
             break;
     }while(choice!=5);
+
     printExit();
     system("pause>0");
-
 }
 
 
