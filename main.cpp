@@ -1,6 +1,7 @@
 #include <iostream>
 #include "FordFulkerson.h"
 #include "MST.h"
+#include "Functionalities.h"
 using namespace std;
 
 vector<vector<int> >adj={
@@ -166,6 +167,6 @@ int main() {
     for (auto &edge:mst) {
         cout<<edge[0]<<"--"<<edge[1]<<endl;
     }
-
+    mainmenu();
     return 0;
 }

@@ -11,6 +11,8 @@ const std::string CLEAR_COMMAND = "clear";
 #endif
 bool endOfProgram= false;
 bool backToTheMainMenu=false;
+
+
 bool checkBack(){
     short back=1;
     do {
@@ -39,18 +41,43 @@ bool checkClose(){
     return (back==2);
 }
 
+/////////////////////////////////////////
+///////// Ford Fulkerson functions //////
+/////////////////////////////////////////
+void ViewMaxFlow(vector<vector<int> >capacity){
+    int source,sink;
+    cout<<"Please enter the source index: ";
+    cin>>source;
+    cout<<"Please enter the sink index: ";
+    cin>>sink;
+    cout<<"The maximum flow to point "<<sink<<" from point "<<source<<" is :"<<ford_fulkerson(capacity,source,sink)<<endl;
+}
+/////////////////////////////////////////
+///////// MST functions /////////////////
+/////////////////////////////////////////
+void BuildMst(){
+    vector<vector<int>> graph;
+    cout<<"Please enter the graph to build: ";
+    cout<<"[1] Traffic Management "<<endl
+        <<"[2] Power Network "<<endl
+        <<"[3] DC Network "<<endl;
+    //kruskalMST(n,graphtype);
+}
+
 void printHeader(){
     cout << "Welcome to our Smart City Project. Please choose one of the following options:" << endl;
 }
 
 void printMainMenu(){
-    cout<<"[1] Traffic Management : "<<endl
-        <<"[2] Power Network : "<<endl
-        <<"[3] DC Network : "<<endl
-        <<"[4] View City map : "<<endl;
+    cout<<"[1] Traffic Management "<<endl
+        <<"[2] Power Network "<<endl
+        <<"[3] DC Network "<<endl
+        <<"[4] View City map "<<endl
+        <<"[5] Credits "<<endl;
 }
 
 void printExit(){
+    system(CLEAR_COMMAND.c_str()); //clear screen
     cout<<"--------------------------------------------Thanks for using our program---------------------------------------------\n\n";
     cout<<"-------------------------------------------------------Credits-------------------------------------------------------\n\n";
     cout<<"--------------------------------------------------Salah eldin Elsayed------------------------------------------------\n\n";
@@ -63,37 +90,86 @@ void printExit(){
 
 }
 void printTrafficMenu(){
-    cout<<"[1] View shortest path : "<<endl
-        <<"[2] View maximum flow : "<<endl
-       // <<"[3] View Minimum cost Graph : "<<endl
-        <<"[4] Build Road Network"<<endl
-        <<"[5] View map"<<endl;
+    cout<<"[1] View shortest path "<<endl
+        <<"[2] View maximum flow "<<endl
+        <<"[3] View Emergency route "<<endl // ford fulkerson
+        <<"[4] Build Road Network "<<endl
+        <<"[5] View map "<<endl;
 }
 void printPowerMenu(){
-    cout<<"[1] View shortest path : "<<endl
-        <<"[2] View maximum flow : "<<endl
-       // <<"[3] View Minimum cost Graph : "<<endl
-        <<"[4] Build Power Network"<<endl
-        <<"[5] View map"<<endl;
+    cout<<"[1] View shortest path "<<endl
+        <<"[2] View maximum flow "<<endl
+        <<"[3] View Emergency route "<<endl // floyd warshall
+        <<"[4] Build Power Network "<<endl
+        <<"[5] View map "<<endl;
 }
 void printNetworkMenu(){
-    cout<<"[1] View shortest path : "<<endl
-        <<"[2] View maximum flow : "<<endl
-      //  <<"[3] View Minimum cost Graph : "<<endl
-        <<"[4] Build Network Network"<<endl
-        <<"[5] View map"<<endl;
+    cout<<"[1] View shortest path "<<endl
+        <<"[2] View maximum flow "<<endl
+        <<"[3] View Emergency route "<<endl // floyd warshall
+        <<"[4] Build Network Network "<<endl
+        <<"[5] View map "<<endl;
 }
 
-/////////////////////////////////////////
-///////// Ford Fulkerson functions //////
-/////////////////////////////////////////
-void ViewMaxFlow(vector<vector<int> >capacity){
-    int source,sink;
-    cout<<"Please enter the source index: ";
-    cin>>source;
-    cout<<"Please enter the sink index: ";
-    cin>>sink;
-    cout<<"The maximum flow to point "<<sink<<" from point "<<source<<" is :"<<ford_fulkerson(capacity,source,sink)<<endl;
+void TrafficMenu(){
+    short choice;
+    do{
+        system(CLEAR_COMMAND.c_str()); //clear screen
+        cout<<"===Traffic Management menu=== "<<endl;
+        printTrafficMenu();
+        cout<<"Enter your choice : ";
+        cin>>choice;
+        if (choice<1 || choice > 5) {
+            continue;
+        }
+        if (choice == 1) {
+            //A*menu
+        }
+        else if (choice == 2) {
+            //ViewMaxFlow();
+        }
+        else if (choice==3){
+            //ViewEmergencyMenu;
+        }
+        else if (choice==4){
+            //BuildMSTMenu
+        }
+        else if (choice==5){
+            //printMap
+        }
+        if(choice>0 && choice<7)
+            checkBack();    //check if the user want to back to the last menu
+
+    }while(!backToTheMainMenu); //check if the user want to back to the main menu
+}
+
+void mainmenu(){
+    printHeader();
+    short choice=1;
+    do{
+        system(CLEAR_COMMAND.c_str()); //clear screen
+        printMainMenu();
+        cout<<"\nPlease enter your choice : ";
+        cin>>choice;
+        if (choice==1)
+            TrafficMenu();
+        if (choice==2)
+            //DCmenu();
+        if (choice==3)
+            //Networkmenu();
+        if (choice==4)
+            //emergencymenu();
+        system(CLEAR_COMMAND.c_str()); //clear screen
+        if(backToTheMainMenu) { //check if the user want to back to the main menu
+            choice = 1;
+            backToTheMainMenu=false;
+        }
+        if(endOfProgram)    //if the user want to end the program
+            break;
+    }while(choice!=5);
+    printExit();
+    system("pause>0");
+
 }
 
 
