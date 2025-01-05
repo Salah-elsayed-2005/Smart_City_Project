@@ -1,6 +1,6 @@
 #include <iostream>
-#define INF 100000 // A large value to represent infinity
-#define V 19 // Number of vertices in the graph
+#define INF 0
+#define V 17 // Number of vertices in the graph
 using namespace std;
 int alt[V][V][V];
 
