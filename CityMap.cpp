@@ -143,7 +143,17 @@ vector<coordinate> City_coordinates = {{0,     -13.97},   // 0
                                        {0,     -7.94},    // 11
                                        {10.48, -6.35},    // 12
                                        {28.89, -15.87},   // 13
-                                       {6.99, -11.11},    // 14
+                                       {6.99,  -11.11},    // 14
                                        {21.27, -17.78},   // 15
                                        {26.99, -4.13}     // 16
 };
+
+
+int getEdges(vector<vector<int>> &graph, int node){
+    int edges = 0;
+    for(int i = 0; i < N; i++){
+        if(graph[node][i] != 0)
+            edges++;
+    }
+    return edges;
+}

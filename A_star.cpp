@@ -19,25 +19,6 @@ struct CompareSecond {
     }
 };
 
-bool IsHeuristicConsistent(vector<vector<int>> &graph) {
-    int n = graph.size();
-    for (int x = 0; x < n; x++) {
-        for (int y = 0; y < n; y++) {
-            if (graph[x][y] != 0) { // There's an edge between x and y
-                int hx = HeuristicValue(graph, x, y); // h(x)
-                int hy = HeuristicValue(graph, y, y); // h(y) (heuristic to itself = 0)
-                int cost = graph[x][y]; // c(x, y)
-
-                if (hx > cost + hy) { // Check consistency
-                    cout << "Inconsistent heuristic between nodes " << x << " and " << y << endl;
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
 void A_Star(vector<vector<int>> &graph, int source, int goal, int &shortest_path, vector<int> &route){
     int n = graph.size();
     vector<bool> visited(n, false);
