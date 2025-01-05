@@ -44,6 +44,9 @@ class Maintenance : public Event {
     Maintenance(int damaged_node) : Event(damaged_node) {}
 
     void trigger();
+    vector<vector<vector<int>>> get_road_network_trigger_steps();
+    vector<vector<vector<int>>> get_power_network_trigger_steps();
+    vector<vector<vector<int>>> get_DC_network_trigger_steps();
     void handle();
 };
 
