@@ -61,7 +61,7 @@ vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges,vector<vector<v
 
     vector<vector<int>> mst;
 
-    int counter=0;
+    int counter=1;
     for (const auto& edge : edges) {
         int u = edge[0], v = edge[1];
         if (dsu.unite(u, v)) {  // include them in the MST only if they don't form a cycle
