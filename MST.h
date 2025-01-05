@@ -52,7 +52,7 @@ public:
 };
 
 
-vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges) { //time complexity is almost O(m log m) where m is the number of edges
+vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges,vector<vector<vector<int>>>&steps) { //time complexity is almost O(m log m) where m is the number of edges
     DSU dsu(n);
     // Sort edges by weight
     sort(edges.begin(), edges.end(), [](const vector<int>& a, const vector<int>& b) {
@@ -61,10 +61,16 @@ vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges) { //time compl
 
     vector<vector<int>> mst;
 
+    int counter=0;
     for (const auto& edge : edges) {
         int u = edge[0], v = edge[1];
         if (dsu.unite(u, v)) {  // include them in the MST only if they don't form a cycle
             mst.push_back(edge);
+            steps[counter][u][v]=edge[2];
+            steps[counter][v][u]=edge[2];
+            if(counter!=n)  //to do not exceed the vector limits
+                steps[counter+1]=steps[counter];
+            counter++;
         }
     }
 

@@ -34,6 +34,8 @@ public:
     vector<vector<vector<int>>> get_road_network_trigger_steps();
     vector<vector<vector<int>>> get_power_network_trigger_steps();
     vector<vector<vector<int>>> get_DC_network_trigger_steps();
+    vector<vector<vector<int>>> get_power_network_handle_steps();
+    vector<vector<vector<int>>> get_DC_network_handle_steps();
 
 
     void handle();
@@ -47,6 +49,8 @@ class Maintenance : public Event {
     vector<vector<vector<int>>> get_road_network_trigger_steps();
     vector<vector<vector<int>>> get_power_network_trigger_steps();
     vector<vector<vector<int>>> get_DC_network_trigger_steps();
+    vector<vector<vector<int>>> get_power_network_handle_steps();
+    vector<vector<vector<int>>> get_DC_network_handle_steps();
     void handle();
 };
 

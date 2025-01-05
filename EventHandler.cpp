@@ -23,9 +23,25 @@ vector<vector<vector<int>>> road_network_trigger_steps;
 vector<vector<vector<int>>> power_network_trigger_steps;
 vector<vector<vector<int>>> DC_network_trigger_steps;
 
+vector<vector<vector<int>>> power_network_handle_steps(N, vector<vector<int>>(N, vector<int>(N, 0)));
+vector<vector<vector<int>>> DC_network_handle_steps(N, vector<vector<int>>(N, vector<int>(N, 0)));
+
+
 
 vector<vector<int>> emergency_routes(3, vector<int>());
 
+vector<vector<int>> makeEdgeList(vector<vector<int>> &graph){
+    vector<vector<int>> edges;
+
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            if (graph[i][j] != 0) {
+                edges.push_back({i, j, graph[i][j]});
+            }
+        }
+    }
+    return edges;
+}
 
 void Earthquake::trigger() {
     /* Initialize with the original graph */
@@ -76,6 +92,11 @@ vector<vector<vector<int>>> Earthquake::get_DC_network_trigger_steps() {
 void Earthquake::handle() {
 
     /* Re-run MST to the modified power and DC graphs */
+    vector<vector<int>>powerEdges= makeEdgeList(modified_power_network); //construct the edge list for the power network
+    kruskalMST(N,powerEdges,power_network_handle_steps);    //find the MST for the power network with each step
+
+    vector<vector<int>>DCEdges= makeEdgeList(modified_DC_network); //construct the edge list for the DC network
+    kruskalMST(N,DCEdges,DC_network_handle_steps);   //find the MST for the DC network with each step
 
     /* Re-run Floyd-Warshall to the modified road network */
 
@@ -88,6 +109,14 @@ void Earthquake::handle() {
     A_Star(road_network, POLICE_STATION, damaged_node, shortest_path, emergency_routes[1]);
     A_Star(road_network, FIRE_STATION, damaged_node, shortest_path, emergency_routes[2]);
 
+}
+
+vector<vector<vector<int>>> Earthquake::get_power_network_handle_steps() {
+    return power_network_handle_steps;
+}
+
+vector<vector<vector<int>>> Earthquake::get_DC_network_handle_steps() {
+    return DC_network_handle_steps;
 }
 
 vector<vector<int>> Earthquake::get_emergency_routes() {
@@ -147,10 +176,20 @@ void Maintenance::handle() {
     /* Re-run ford Fulkerson */
 
     /* Re-run MST */
+    vector<vector<int>>powerEdges= makeEdgeList(modified_power_network); //construct the edge list for the power network
+    kruskalMST(N,powerEdges,power_network_handle_steps);    //find the MST for the power network with each step
 
+    vector<vector<int>>DCEdges= makeEdgeList(modified_DC_network); //construct the edge list for the DC network
+    kruskalMST(N,DCEdges,DC_network_handle_steps);   //find the MST for the DC network with each step
 }
 
+vector<vector<vector<int>>> Maintenance::get_power_network_handle_steps() {
+    return power_network_handle_steps;
+}
 
+vector<vector<vector<int>>> Maintenance::get_DC_network_handle_steps() {
+    return DC_network_handle_steps;
+}
 
 /**************   Traffic Congestion  **************/
 
