@@ -68,7 +68,7 @@ vector<vector<int>> kruskalMST(int n, vector<vector<int>>& edges,vector<vector<v
             mst.push_back(edge);
             steps[counter][u][v]=edge[2];
             steps[counter][v][u]=edge[2];
-            if(counter!=n)  //to do not exceed the vector limits
+            if(counter+1!=n)  //to do not exceed the vector limits
                 steps[counter+1]=steps[counter];
             counter++;
         }
