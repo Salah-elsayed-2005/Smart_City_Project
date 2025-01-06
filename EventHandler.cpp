@@ -116,11 +116,11 @@ void Earthquake::handle() {
 }
 /*****************************  to the graph  ***************************/
 
-vector<vector<vector<int>>> Earthquake::get_power_network_handle_steps() {
+vector<vector<vector<int>>> Earthquake::get_power_network_handle_steps() { //vector of graphs (Building the MST of power network after damage)
     return power_network_handle_steps;
 }
 
-vector<vector<vector<int>>> Earthquake::get_DC_network_handle_steps() {
+vector<vector<vector<int>>> Earthquake::get_DC_network_handle_steps() { //vector of graphs (Building the MST of DC network after damage)
     return DC_network_handle_steps;
 }
 
@@ -198,11 +198,11 @@ void Maintenance::handle() {
 
 /*****************************  to the graph  ***************************/
 
-vector<vector<vector<int>>> Maintenance::get_power_network_handle_steps() {
+vector<vector<vector<int>>> Maintenance::get_power_network_handle_steps() { //vector of graphs (Building the MST of power network after maintenance)
     return power_network_handle_steps;
 }
 
-vector<vector<vector<int>>> Maintenance::get_DC_network_handle_steps() {
+vector<vector<vector<int>>> Maintenance::get_DC_network_handle_steps() {    //vector of graphs (Building the MST of DC network after maintenance)
     return DC_network_handle_steps;
 }
 /*************************************************************************/

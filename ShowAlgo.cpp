@@ -6,21 +6,21 @@
 #include "FordFulkerson.h"
 #include "EventHandler.h"
 #include "EventHandler.cpp"
-
 #include "ShowAlgo.h"
 
-vector<vector<vector<int>>> start_MST_build_power_network(){
+/************************ To graph ******************************************/
+vector<vector<vector<int>>> start_MST_build_power_network(){ //vector of graphs (Building the MST of power network)
     vector<vector<int>>powerEdges= makeEdgeList(modified_power_network); //construct the edge list for the power network
     kruskalMST(N,powerEdges,power_network_build_steps);    //find the MST for the power network with each step
     return power_network_build_steps;
 }
 
-vector<vector<vector<int>>> start_MST_build_DC_network(){
+vector<vector<vector<int>>> start_MST_build_DC_network(){   //vector of graphs (Building the MST of DC network)
     vector<vector<int>>DCEdges= makeEdgeList(modified_DC_network); //construct the edge list for the DC network
     kruskalMST(N,DCEdges,DC_network_build_steps);   //find the MST for the DC network with each step
     return DC_network_build_steps;
 }
-
+/*************************************************************************/
 
 vector<int> start_shortest_path(int source, int goal){
     int shortest_path;
