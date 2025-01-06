@@ -1,8 +1,21 @@
-//
-// Created by Se7s on 12/26/2024.
-//
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <cmath>
+#include <queue>
+#include <stack>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdarg>
+#include <cstring>
+#include <deque>
+#include <bitset>
+#include <cassert>
+#include <numeric>
 
-#include <bits/stdc++.h>
 using namespace std;
 #ifndef SMART_CITY_PROJECT_MST_H
 #define SMART_CITY_PROJECT_MST_H

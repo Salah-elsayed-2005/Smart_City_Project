@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
-
-#include "CityMap.h"
+#include "include/CityMap.h"
 
 //                                   {00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16}
 vector<vector<int>> road_network =  {{00, 12, 00, 00, 00, 00, 00, 00, 00, 00, 00,  8, 00, 00, 11, 00, 00}, // 0
@@ -158,3 +157,13 @@ int getEdges(vector<vector<int>> &graph, int node){
     }
     return edges;
 }
+
+std::vector<std::vector<int>> get_road_network() {
+    return road_network;
+}
+
+// Function to return city coordinates
+std::vector<coordinate> get_city_coordinates() {
+    return City_coordinates;
+}
+

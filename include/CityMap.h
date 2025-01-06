@@ -21,5 +21,7 @@ extern vector<vector<int>> DC_network_capacity;
 extern vector<coordinate> City_coordinates;
 
 int getEdges(vector<vector<int>> &graph, int node);
+vector<std::vector<int>> get_road_network();
+vector<coordinate> get_city_coordinates();
 
 #endif

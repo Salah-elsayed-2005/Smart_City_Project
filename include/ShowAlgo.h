@@ -1,3 +1,5 @@
+#include "CityMap.h"
+#include "FordFulkerson.h"
 #ifndef SMART_CITY_PROJECT_SHOWALGO_H
 #define SMART_CITY_PROJECT_SHOWALGO_H
 using namespace std;
@@ -5,8 +7,6 @@ using namespace std;
 //////////////////////// HUSSEIN
 vector<vector<vector<int>>> start_MST_build_power_network();
 vector<vector<vector<int>>> start_MST_build_DC_network();
-vector<vector<vector<int>>> power_network_build_steps(N, vector<vector<int>>(N, vector<int>(N, 0)));
-vector<vector<vector<int>>> DC_network_build_steps(N, vector<vector<int>>(N, vector<int>(N, 0)));
 
 
 vector<int> start_shortest_path(int source, int goal);

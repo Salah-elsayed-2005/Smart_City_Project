@@ -7,6 +7,9 @@
 #include "EventHandler.h"
 #include "ShowAlgo.h"
 
+vector<vector<vector<int>>> power_network_build_steps(N, vector<vector<int>>(N, vector<int>(N, 0)));
+vector<vector<vector<int>>> DC_network_build_steps(N, vector<vector<int>>(N, vector<int>(N, 0)));
+
 /************************ To graph ******************************************/
 vector<vector<vector<int>>> start_MST_build_power_network(){ //vector of graphs (Building the MST of power network)
     vector<vector<int>>powerEdges= makeEdgeList(modified_power_network); //construct the edge list for the power network
@@ -40,7 +43,7 @@ int printFord::get_sink() {
 int printFord::get_max_flow() {
     return maxflow;
 }
-vector<vector<int > > printFord::get_cap() {
+vector<vector<int> > printFord::get_cap() {
     return cap;
 }
 vector<vector<int > > printFord::get_flow() {

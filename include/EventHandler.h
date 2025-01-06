@@ -44,6 +44,7 @@ public:
 };
 
 class Maintenance : public Event {
+public:
     Maintenance(int damaged_node) : Event(damaged_node) {}
 
     void trigger();
@@ -56,6 +57,7 @@ class Maintenance : public Event {
 };
 
 class TrafficCongestion : public Event {
+public:
     TrafficCongestion(int damaged_node) : Event(damaged_node) {}
 
     void trigger();

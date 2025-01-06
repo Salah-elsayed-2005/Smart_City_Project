@@ -1,9 +1,7 @@
-//
-// Created by Se7s on 1/5/2025.
-//
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
-// DSU class for union-find operations
-#include <bits/stdc++.h>
 using namespace std;
 class DSU {
     vector<int> parent, rank;

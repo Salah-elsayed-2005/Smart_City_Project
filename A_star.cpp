@@ -3,8 +3,8 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
-#include "CityMap.h"
-#include "A_Star.h"
+#include "include/CityMap.h"
+#include "include/A_Star.h"
 
 int HeuristicValue(vector<vector<int>> &graph, int source, int goal){
     return (int)round(sqrt(pow((City_coordinates[goal].x - City_coordinates[source].x), 2) +

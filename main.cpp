@@ -1,8 +1,8 @@
 #include <iostream>
-#include "CityMap.h"
-#include "FordFulkerson.h"
-#include "MST.h"
-#include "Functionalities.h"
+#include "include/CityMap.h"
+#include "include/FordFulkerson.h"
+#include "include/MST.h"
+#include "include/Functionalities.h"
 using namespace std;
 
 int main() {
