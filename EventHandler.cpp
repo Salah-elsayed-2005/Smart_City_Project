@@ -72,10 +72,11 @@ void Earthquake::trigger() {
         }
     }
 
-    /* Remove Ford capacities */
+    /* Remove Ford capacities */ /////////////////// SALAH
 }
 
 
+/*****************************  to the graph  ***************************/
 vector<vector<vector<int>>> Earthquake::get_road_network_trigger_steps() {
     return road_network_trigger_steps;
 }
@@ -87,7 +88,7 @@ vector<vector<vector<int>>> Earthquake::get_power_network_trigger_steps() {
 vector<vector<vector<int>>> Earthquake::get_DC_network_trigger_steps() {
     return DC_network_trigger_steps;
 }
-
+/*************************************************************************/
 
 void Earthquake::handle() {
 
@@ -97,8 +98,6 @@ void Earthquake::handle() {
 
     vector<vector<int>>DCEdges= makeEdgeList(modified_DC_network); //construct the edge list for the DC network
     kruskalMST(N,DCEdges,DC_network_handle_steps);   //find the MST for the DC network with each step
-
-    /* Re-run Floyd-Warshall to the modified road network */
 
 
     /* A* from the three emergency centers to the damaged node */
@@ -110,6 +109,7 @@ void Earthquake::handle() {
     A_Star(road_network, FIRE_STATION, damaged_node, shortest_path, emergency_routes[2]);
 
 }
+/*****************************  to the graph  ***************************/
 
 vector<vector<vector<int>>> Earthquake::get_power_network_handle_steps() {
     return power_network_handle_steps;
@@ -122,6 +122,8 @@ vector<vector<vector<int>>> Earthquake::get_DC_network_handle_steps() {
 vector<vector<int>> Earthquake::get_emergency_routes() {
     return emergency_routes;
 }
+/*************************************************************************/
+
 
 /**************   Maintenance  **************/
 
@@ -156,8 +158,10 @@ void Maintenance::trigger() {
     }
 
     /* Reduce or disable the ford-fulkeson capacity to the damaged node */
-
+    /////////////////////// SALAH
 }
+
+/*****************************  to the graph  ***************************/
 
 vector<vector<vector<int>>> Maintenance::get_road_network_trigger_steps() {
     return road_network_trigger_steps;
@@ -170,6 +174,7 @@ vector<vector<vector<int>>> Maintenance::get_power_network_trigger_steps() {
 vector<vector<vector<int>>> Maintenance::get_DC_network_trigger_steps() {
     return DC_network_trigger_steps;
 }
+/*************************************************************************/
 
 
 void Maintenance::handle() {
@@ -183,6 +188,8 @@ void Maintenance::handle() {
     kruskalMST(N,DCEdges,DC_network_handle_steps);   //find the MST for the DC network with each step
 }
 
+/*****************************  to the graph  ***************************/
+
 vector<vector<vector<int>>> Maintenance::get_power_network_handle_steps() {
     return power_network_handle_steps;
 }
@@ -190,6 +197,8 @@ vector<vector<vector<int>>> Maintenance::get_power_network_handle_steps() {
 vector<vector<vector<int>>> Maintenance::get_DC_network_handle_steps() {
     return DC_network_handle_steps;
 }
+/*************************************************************************/
+
 
 /**************   Traffic Congestion  **************/
 
@@ -203,13 +212,16 @@ void TrafficCongestion::trigger() {
     }
 
     /* Decrease the edge capacity for the edges connected to the congested node */
+    //////////////// SALAH
 
 }
+/*************************************************************************/
+
 
 void TrafficCongestion::handle(){
     /* Re-Run Floyd Warshall */
 
-    /* Re-Run Fork-Fulkerson */
+    /* Re-Run Ford-Fulkerson */
+    /////////////////// SALAH
 
-    /* Use A* (still being figured) */
 }
