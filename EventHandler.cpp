@@ -216,11 +216,10 @@ void TrafficCongestion::trigger() {
         if(modified_road_network[damaged_node][i] != 0) {
             modified_road_network[damaged_node][i] *= 2;
             modified_road_network[i][damaged_node] *= 2;
+            modified_road_network_capacity[i][damaged_node]=modified_road_network_capacity[i][damaged_node]/4 +1;
+            modified_road_network_capacity[damaged_node][i]=modified_road_network_capacity[damaged_node][i]/4 +1;
         }
     }
-
-    /* Decrease the edge capacity for the edges connected to the congested node */
-    //////////////// SALAH
 
 }
 /*************************************************************************/
