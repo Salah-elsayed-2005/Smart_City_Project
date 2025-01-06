@@ -49,7 +49,7 @@ void ViewMaxFlow(vector<vector<int> >capacity){
     cin>>source;
     cout<<"Please enter the sink index: ";
     cin>>sink;
-    cout<<"The maximum flow to point "<<sink<<" from point "<<source<<" is :"<<ford_fulkerson(capacity,source,sink)<<endl;
+    //cout<<"The maximum flow to point "<<sink<<" from point "<<source<<" is :"<<ford_fulkerson(capacity,source,sink)<<endl;
 }
 
 /////////////////////////////////////////

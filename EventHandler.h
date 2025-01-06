@@ -14,6 +14,7 @@ extern vector<vector<int>> modified_DC_network_capacity;
 #define POLICE_STATION  15
 #define FIRE_STATION    16
 
+vector<vector<int>> makeEdgeList(vector<vector<int>> &graph);
 
 class Event {
 public:

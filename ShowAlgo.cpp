@@ -5,7 +5,6 @@
 #include "MST.h"
 #include "FordFulkerson.h"
 #include "EventHandler.h"
-#include "EventHandler.cpp"
 #include "ShowAlgo.h"
 
 /************************ To graph ******************************************/
