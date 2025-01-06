@@ -79,6 +79,5 @@ pair<vector<vector<int > >, int> ford_fulkerson(vector<vector<int> > cap, int so
     cout<<flow[1][2]<<endl;
     cout<<flow[2][1]<<endl;
   */
-    return max_flow;
-
+    return {flow, max_flow};
 }

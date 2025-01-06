@@ -5,14 +5,20 @@
 #include "MST.h"
 #include "FordFulkerson.h"
 #include "EventHandler.h"
+#include "EventHandler.cpp"
 
 #include "ShowAlgo.h"
 
 vector<vector<vector<int>>> start_MST_build_power_network(){
-
+    vector<vector<int>>powerEdges= makeEdgeList(modified_power_network); //construct the edge list for the power network
+    kruskalMST(N,powerEdges,power_network_build_steps);    //find the MST for the power network with each step
+    return power_network_build_steps;
 }
-vector<vector<vector<int>>> start_MST_build_DC_network(){
 
+vector<vector<vector<int>>> start_MST_build_DC_network(){
+    vector<vector<int>>DCEdges= makeEdgeList(modified_DC_network); //construct the edge list for the DC network
+    kruskalMST(N,DCEdges,DC_network_build_steps);   //find the MST for the DC network with each step
+    return DC_network_build_steps;
 }
 
 

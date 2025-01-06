@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
 
-    cout<<ford_fulkerson(road_network_capacity,0,9);
+    //cout<<ford_fulkerson(road_network_capacity,0,9);
     /**********************************Test MST******************************************************/
     /*int n = 5;
     vector<vector<int>> graph = {
