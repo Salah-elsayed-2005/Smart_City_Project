@@ -56,13 +56,19 @@ void Earthquake::trigger() {
         if(modified_road_network[damaged_node][i] != 0){
 
             modified_road_network[damaged_node][i] = 0;
+            modified_road_network_capacity[damaged_node][i] = 0;
             modified_road_network[i][damaged_node] = 0;
+            modified_road_network_capacity[i][damaged_node] = 0;
 
             modified_power_network[damaged_node][i] = 0;
             modified_power_network[i][damaged_node] = 0;
+            modified_power_network_capacity[damaged_node][i] = 0;
+            modified_power_network_capacity[i][damaged_node] = 0;
 
             modified_DC_network[damaged_node][i] = 0;
             modified_DC_network[i][damaged_node] = 0;
+            modified_DC_network_capacity[damaged_node][i] = 0;
+            modified_DC_network_capacity[i][damaged_node] = 0;
 
             road_network_trigger_steps.push_back(modified_road_network);
             power_network_trigger_steps.push_back(modified_power_network);
@@ -72,7 +78,6 @@ void Earthquake::trigger() {
         }
     }
 
-    /* Remove Ford capacities */ /////////////////// SALAH
 }
 
 
@@ -140,6 +145,8 @@ void Maintenance::trigger() {
 
                 modified_power_network[damaged_node][i] = 0;
                 modified_power_network[i][damaged_node] = 0;
+                modified_power_network_capacity[damaged_node][i] = 0;
+                modified_power_network_capacity[i][damaged_node] = 0;
 
                 power_network_trigger_steps.push_back(modified_power_network);
             }
@@ -151,14 +158,15 @@ void Maintenance::trigger() {
 
                 modified_DC_network[damaged_node][i] = 0;
                 modified_DC_network[i][damaged_node] = 0;
+                modified_DC_network_capacity[damaged_node][i] = 0;
+                modified_DC_network_capacity[i][damaged_node] = 0;
 
                 DC_network_trigger_steps.push_back(modified_DC_network);
             }
         }
     }
 
-    /* Reduce or disable the ford-fulkeson capacity to the damaged node */
-    /////////////////////// SALAH
+
 }
 
 /*****************************  to the graph  ***************************/
