@@ -48,5 +48,5 @@ printFord start_ford_fulkerson(vector<vector<int> > cap,int source,int sink){
     toreturn.cap=cap;
     toreturn.maxflow= ford_fulkerson(cap,source, sink).second;
     toreturn.flow= ford_fulkerson(cap,source, sink).first;
-
+    return toreturn;
 }
