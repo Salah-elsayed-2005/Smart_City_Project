@@ -28,7 +28,7 @@ bool bfs(vector<vector<int> > &adj, int source, int sink, vector<int>&parent ){
     return visited[sink];
 }
 
-int ford_fulkerson(vector<vector<int> > cap, int source, int sink){
+pair<vector<vector<int > >, int> ford_fulkerson(vector<vector<int> > cap, int source, int sink){
     int max_flow=0;
     int n=cap[0].size();
     vector<int> parent(n,-1);

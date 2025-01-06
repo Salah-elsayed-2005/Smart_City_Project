@@ -8,7 +8,7 @@ using namespace std;
 
 
 bool bfs(std::vector<std::vector<int>>& graph, int source, int sink, std::vector<int>& parent);
-int ford_fulkerson(std::vector<std::vector<int>> graph, int source, int sink);
+pair<vector<vector<int > >, int> ford_fulkerson(std::vector<std::vector<int>> graph, int source, int sink);
 
 
 #endif //START_FORDFULKERSON_H
