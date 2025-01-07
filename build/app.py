@@ -448,6 +448,128 @@ def update_visualization(selected_network, prev_clicks, next_clicks):
 
     return fig, f"Visualizing Step {current_step + 1}/{total_steps}."
 
+@app.callback(
+    [Output("city-map", "figure", allow_duplicate=True), Output("metrics", "children", allow_duplicate=True)],
+    [Input("earthquake-button", "n_clicks")],
+    [State("earthquake-node", "value"), State("network-dropdown", "value")],
+    prevent_initial_call=True
+)
+
+def handle_earthquake(n_clicks, damaged_node, selected_network):
+    if n_clicks is None or damaged_node is None:
+        raise PreventUpdate
+
+    # Initialize Earthquake Event
+    earthquake = smart_city.Earthquake(damaged_node)
+    earthquake.trigger()
+
+    fig = go.Figure()
+    steps = []  # To store steps for visualization
+    metrics = []  # To store metrics for display
+
+    if selected_network == "road":
+        # Road Network: Visualize Trigger Steps
+        steps = earthquake.get_road_network_trigger_steps()
+        for step_idx, step in enumerate(steps):
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="orange", width=2),
+                            hoverinfo="none"
+                        ))
+
+            fig.update_layout(
+                title=f"Road Network - Trigger Step {step_idx + 1}/{len(steps)}",
+                showlegend=False,
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                margin=dict(l=10, r=10, t=50, b=10),
+                plot_bgcolor="white"
+            )
+
+        # Get Emergency Routes
+        routes = earthquake.get_emergency_routes()
+        for route_idx, route in enumerate(routes):
+            for i in range(len(route) - 1):
+                x0, y0 = city_coordinates[route[i]]
+                x1, y1 = city_coordinates[route[i + 1]]
+                fig.add_trace(go.Scatter(
+                    x=[x0, x1], y=[y0, y1],
+                    mode="lines+markers",
+                    line=dict(color="red", width=4),
+                    name=f"Emergency Route {route_idx + 1}"
+                ))
+
+            metrics.append(f"Emergency Route {route_idx + 1}: {route}")
+
+    elif selected_network == "power":
+        # Power Network: Trigger Steps
+        steps = earthquake.get_power_network_trigger_steps()
+        for step_idx, step in enumerate(steps):
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="green", width=2),
+                            hoverinfo="none"
+                        ))
+
+        # Handle Steps
+        handle_steps = earthquake.get_power_network_handle_steps()
+        for step_idx, step in enumerate(handle_steps):
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="blue", width=2),
+                            hoverinfo="none"
+                        ))
+
+    elif selected_network == "dc":
+        # DC Network: Trigger Steps
+        steps = earthquake.get_DC_network_trigger_steps()
+        for step_idx, step in enumerate(steps):
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="purple", width=2),
+                            hoverinfo="none"
+                        ))
+
+        # Handle Steps
+        handle_steps = earthquake.get_DC_network_handle_steps()
+        for step_idx, step in enumerate(handle_steps):
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="blue", width=2),
+                            hoverinfo="none"
+                        ))
+
+    return fig, " | ".join(metrics) if metrics else f"Earthquake Triggered on {selected_network.capitalize()} Network."
 
 
 

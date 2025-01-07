@@ -2,9 +2,10 @@
 #include <vector>
 #include <cmath>
 #include "CityMap.h"
-#include "MST.h"
 #include "A_Star.h"
+#include "FordFulkerson.h"
 #include "Emergency_Floyd.h"
+#include "MST.h"
 #include "EventHandler.h"
 
 vector<vector<int>> modified_road_network = road_network;
@@ -57,24 +58,43 @@ void Earthquake::trigger() {
             modified_road_network[i][damaged_node] = 0;
             modified_road_network_capacity[i][damaged_node] = 0;
 
+            road_network_trigger_steps.push_back(modified_road_network);
+
+            i++;
+        }
+    }
+
+    nof_damaged_edges = round(getEdges(modified_power_network, damaged_node) / 2.0);
+
+    for(int i = 0; i < nof_damaged_edges;){
+        if(modified_power_network[damaged_node][i] != 0){
+
             modified_power_network[damaged_node][i] = 0;
             modified_power_network[i][damaged_node] = 0;
             modified_power_network_capacity[damaged_node][i] = 0;
             modified_power_network_capacity[i][damaged_node] = 0;
+
+            power_network_trigger_steps.push_back(modified_power_network);
+
+            i++;
+        }
+    }
+
+    nof_damaged_edges = (int)round(getEdges(modified_DC_network, damaged_node) / 2.0);
+
+    for(int i = 0; i < nof_damaged_edges;){
+        if(modified_DC_network[damaged_node][i] != 0){
 
             modified_DC_network[damaged_node][i] = 0;
             modified_DC_network[i][damaged_node] = 0;
             modified_DC_network_capacity[damaged_node][i] = 0;
             modified_DC_network_capacity[i][damaged_node] = 0;
 
-            road_network_trigger_steps.push_back(modified_road_network);
-            power_network_trigger_steps.push_back(modified_power_network);
             DC_network_trigger_steps.push_back(modified_DC_network);
 
             i++;
         }
     }
-
 }
 
 
