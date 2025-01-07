@@ -845,7 +845,7 @@ def handle_traffic_congestion(n_clicks, congested_node, selected_network):
     # Redirect if the special value is entered
     if congested_node == 69:
         import webbrowser
-        webbrowser.open("https://www.google.com")
+        webbrowser.open("https://www.youtube.com/watch?v=ujr8N-vFaYg")
         return dash.no_update, dash.no_update
 
     # Ensure Traffic Congestion is only triggered on the Road Network
