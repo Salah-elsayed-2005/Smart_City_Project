@@ -7,8 +7,9 @@ import plotly.graph_objects as go
 import smart_city  # Import compiled C++ module via pybind11
 
 current_step = 0
-total_steps = 0
-steps = []
+trigger_steps = []
+handle_steps = []
+
 
 
 # Fetch node coordinates and graph data
@@ -177,6 +178,7 @@ app.layout = dbc.Container(
                             className="mb-4"
                         ),html.Div(
                         [
+                            dbc.Button("Reset", id="reset-button", color="danger", className="me-2"),
                             dbc.Button("Previous Step", id="prev-step-button", color="secondary", className="me-2"),
                             dbc.Button("Next Step", id="next-step-button", color="primary"),
                         ],
@@ -222,6 +224,7 @@ app.layout = dbc.Container(
             ]
         ),
 
+
         # Metrics Row
         dbc.Row(
             dbc.Col(
@@ -233,7 +236,18 @@ app.layout = dbc.Container(
                 width=12
             ),
             className="mt-3"
-        )
+        ),html.Div(
+        [
+            dbc.Button("Start Animation", id="start-animation", color="primary", className="mb-3"),
+            dcc.Interval(
+                id="animation-interval",
+                interval=1000,  # 1 second per step
+                n_intervals=0,
+                disabled=True  # Initially disabled
+            )
+        ]
+    )
+
 
 
     ],
@@ -248,6 +262,8 @@ app.layout = dbc.Container(
     prevent_initial_call=True
 )
 def run_shortest_path(n_clicks, source, sink):
+    global traffic_edges  # Use congested edges from traffic visualization if available
+
     if n_clicks is None or source is None or sink is None or source == sink:
         raise PreventUpdate
 
@@ -255,16 +271,63 @@ def run_shortest_path(n_clicks, source, sink):
     route = smart_city.start_shortest_path(source, sink)
 
     # Prepare the updated graph
-    fig = plot_graph()
+    fig = go.Figure()
+
+    # Plot all edges as light gray for the base graph
+    for i, row in enumerate(road_network):
+        for j, weight in enumerate(row):
+            if weight > 0:
+                x0, y0 = city_coordinates[i]
+                x1, y1 = city_coordinates[j]
+                fig.add_trace(go.Scatter(
+                    x=[x0, x1], y=[y0, y1],
+                    mode="lines",
+                    line=dict(color="gray", width=1),  # Light gray edges
+                    hoverinfo="none"
+                ))
+
+    # Add traffic congestion edges in red (if available)
+    if 'traffic_edges' in globals():
+        for edge in traffic_edges:
+            x0, y0 = city_coordinates[edge[0]]
+            x1, y1 = city_coordinates[edge[1]]
+            fig.add_trace(go.Scatter(
+                x=[x0, x1], y=[y0, y1],
+                mode="lines",
+                line=dict(color="red", width=2),  # Congested edges in red
+                hoverinfo="none"
+            ))
+
+    # Add shortest path edges in blue
     for i in range(len(route) - 1):
         x0, y0 = city_coordinates[route[i]]
         x1, y1 = city_coordinates[route[i + 1]]
         fig.add_trace(go.Scatter(
             x=[x0, x1], y=[y0, y1],
             mode="lines",
-            line=dict(color="red", width=4),
+            line=dict(color="blue", width=4),  # Shortest path edges in blue
             hoverinfo="none"
         ))
+
+    # Add all nodes to ensure they remain visible
+    for node in nodes:
+        fig.add_trace(go.Scatter(
+            x=[node["x"]], y=[node["y"]],
+            mode="markers+text",
+            marker=dict(size=15, color="skyblue", line=dict(color="black", width=2)),
+            text=node["label"],
+            textposition="top center",
+            hoverinfo="text"
+        ))
+
+    fig.update_layout(
+        title="Shortest Path with Traffic Congestion",
+        showlegend=False,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        margin=dict(l=10, r=10, t=50, b=10),
+        plot_bgcolor="white"
+    )
 
     return fig, f"Shortest path from {source} to {sink}: {route}"
 
@@ -571,6 +634,253 @@ def handle_earthquake(n_clicks, damaged_node, selected_network):
 
     return fig, " | ".join(metrics) if metrics else f"Earthquake Triggered on {selected_network.capitalize()} Network."
 
+@app.callback(
+    [
+        Output("city-map", "figure", allow_duplicate=True),
+        Output("metrics", "children", allow_duplicate=True),
+        Output("animation-interval", "disabled")
+    ],
+    [
+        Input("maintenance-button", "n_clicks"),
+        Input("start-animation", "n_clicks"),
+        Input("animation-interval", "n_intervals")
+    ],
+    [
+        State("maintenance-node", "value"),
+        State("network-dropdown", "value")
+    ],
+    prevent_initial_call=True
+)
+def handle_maintenance_and_animation(
+        maintenance_clicks, animation_clicks, n_intervals, damaged_node, selected_network
+):
+    global current_step, trigger_steps, handle_steps
+
+    ctx = dash.callback_context
+    triggered_id = ctx.triggered[0]["prop_id"].split(".")[0] if ctx.triggered else None
+
+    # Initialize Maintenance when button is clicked
+    if triggered_id == "maintenance-button":
+        if damaged_node is None or selected_network not in ["power", "dc"]:
+            return plot_graph(), "Select a valid node and network.", True
+
+        maintenance = smart_city.Maintenance(damaged_node)
+        maintenance.trigger()
+        maintenance.handle()
+
+        if selected_network == "power":
+            trigger_steps = maintenance.get_power_network_trigger_steps()
+            handle_steps = maintenance.get_power_network_handle_steps()
+        elif selected_network == "dc":
+            trigger_steps = maintenance.get_DC_network_trigger_steps()
+            handle_steps = maintenance.get_DC_network_handle_steps()
+
+        current_step = 0  # Reset to the first step
+        return plot_graph(), "Maintenance triggered. Start animation to visualize steps.", True
+
+    # Start Animation when button is clicked
+    elif triggered_id == "start-animation":
+        if not trigger_steps and not handle_steps:
+            return plot_graph(), "No steps to animate. Trigger maintenance first.", True
+
+        return dash.no_update, "Animation started.", False  # Enable interval
+
+    # Animation Logic: Update Visualization for Each Step
+    elif triggered_id == "animation-interval":
+        total_steps = len(trigger_steps) + len(handle_steps)
+
+        if current_step >= total_steps:
+            return dash.no_update, "Animation complete.", True  # Disable interval
+
+        fig = go.Figure()
+
+        # Determine if we are in the trigger or handle phase
+        if current_step < len(trigger_steps):
+            step = trigger_steps[current_step]
+            step_color = "orange"  # Trigger steps in orange
+        else:
+            step = handle_steps[current_step - len(trigger_steps)]
+            step_color = "blue"  # Handle (MST) steps in blue
+
+        # Visualize the current step
+        for i in range(len(step)):
+            for j in range(len(step[i])):
+                if step[i][j] > 0:
+                    x0, y0 = city_coordinates[i]
+                    x1, y1 = city_coordinates[j]
+                    fig.add_trace(go.Scatter(
+                        x=[x0, x1], y=[y0, y1],
+                        mode="lines",
+                        line=dict(color=step_color, width=2),
+                        hoverinfo="none"
+                    ))
+
+        # Add all nodes to ensure they remain visible
+        for node in nodes:
+            fig.add_trace(go.Scatter(
+                x=[node["x"]], y=[node["y"]],
+                mode="markers+text",
+                marker=dict(size=15, color="skyblue", line=dict(color="black", width=2)),
+                text=node["label"],
+                textposition="top center",
+                hoverinfo="text"
+            ))
+
+        fig.update_layout(
+            title=f"Step {current_step + 1} of {total_steps}",
+            showlegend=False,
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            margin=dict(l=10, r=10, t=50, b=10),
+            plot_bgcolor="white"
+        )
+
+        current_step += 1  # Move to the next step
+        return fig, f"Visualizing Step {current_step} of {total_steps}.", False
+
+    return dash.no_update, dash.no_update, dash.no_update
+
+
+
+
+@app.callback(
+    [Output("city-map", "figure", allow_duplicate=True), Output("metrics", "children", allow_duplicate=True)],
+    [Input("traffic-button", "n_clicks")],
+    [State("traffic-node", "value"), State("network-dropdown", "value")],
+    prevent_initial_call=True
+)
+def handle_traffic_congestion(n_clicks, congested_node, selected_network):
+    global all_traffic_edges  # Store all congested edges globally
+
+    if n_clicks is None or congested_node is None:
+        raise PreventUpdate
+
+    # Ensure Traffic Congestion is only triggered on the Road Network
+    if selected_network != "road":
+        return plot_graph(), "Traffic Congestion can only be triggered on the Road Network."
+
+    # Initialize Traffic Congestion Event
+    traffic = smart_city.TrafficCongestion(congested_node)
+    traffic.trigger()  # Trigger traffic congestion
+
+    if 'all_traffic_edges' not in globals():
+        all_traffic_edges = []  # Initialize if not already defined
+
+    # Add new congested edges to the global list
+    new_traffic_edges = []  # Store edges for this node
+    for i in range(len(road_network)):
+        if road_network[congested_node][i] > 0:
+            new_traffic_edges.append((congested_node, i))
+
+    all_traffic_edges.extend(new_traffic_edges)  # Append new edges
+
+    # Remove duplicates to avoid redundant visualization
+    all_traffic_edges = list(set(all_traffic_edges))
+
+    fig = go.Figure()
+
+    # Plot all edges as light gray for the base graph
+    for i, row in enumerate(road_network):
+        for j, weight in enumerate(row):
+            if weight > 0:
+                x0, y0 = city_coordinates[i]
+                x1, y1 = city_coordinates[j]
+                fig.add_trace(go.Scatter(
+                    x=[x0, x1], y=[y0, y1],
+                    mode="lines",
+                    line=dict(color="gray", width=1),  # Light gray edges
+                    hoverinfo="none"
+                ))
+
+    # Highlight all congested edges in red
+    for edge in all_traffic_edges:
+        x0, y0 = city_coordinates[edge[0]]
+        x1, y1 = city_coordinates[edge[1]]
+        fig.add_trace(go.Scatter(
+            x=[x0, x1], y=[y0, y1],
+            mode="lines",
+            line=dict(color="red", width=2),  # Highlight all congested edges
+            hoverinfo="none"
+        ))
+
+    # Add all nodes to the graph to ensure they remain visible
+    for node in nodes:
+        fig.add_trace(go.Scatter(
+            x=[node["x"]], y=[node["y"]],
+            mode="markers+text",
+            marker=dict(size=15, color="skyblue", line=dict(color="black", width=2)),
+            text=node["label"],
+            textposition="top center",
+            hoverinfo="text"
+        ))
+
+    fig.update_layout(
+        title="Traffic Congestion Visualization - Road Network",
+        showlegend=False,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        margin=dict(l=10, r=10, t=50, b=10),
+        plot_bgcolor="white"
+    )
+
+    return fig, f"Traffic Congestion Triggered at Node {congested_node}."
+
+
+@app.callback(
+    [Output("city-map", "figure", allow_duplicate=True), Output("metrics", "children", allow_duplicate=True)],
+    [Input("reset-button", "n_clicks")],
+    prevent_initial_call=True
+)
+def reset_graph(n_clicks):
+    global current_step, total_steps, steps, all_traffic_edges
+
+    if n_clicks is None:
+        raise PreventUpdate
+
+    # Reset global variables
+    current_step = 0
+    total_steps = 0
+    steps = []
+    all_traffic_edges = []
+
+    # Create the original graph with light gray edges
+    fig = go.Figure()
+
+    # Plot all edges in light gray
+    for i, row in enumerate(road_network):
+        for j, weight in enumerate(row):
+            if weight > 0:
+                x0, y0 = city_coordinates[i]
+                x1, y1 = city_coordinates[j]
+                fig.add_trace(go.Scatter(
+                    x=[x0, x1], y=[y0, y1],
+                    mode="lines",
+                    line=dict(color="gray", width=1),  # Light gray edges
+                    hoverinfo="none"
+                ))
+
+    # Add all nodes to the graph
+    for node in nodes:
+        fig.add_trace(go.Scatter(
+            x=[node["x"]], y=[node["y"]],
+            mode="markers+text",
+            marker=dict(size=15, color="skyblue", line=dict(color="black", width=2)),
+            text=node["label"],
+            textposition="top center",
+            hoverinfo="text"
+        ))
+
+    # Update layout
+    fig.update_layout(
+        title="Original Graph - Reset",
+        showlegend=False,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        margin=dict(l=10, r=10, t=50, b=10),
+        plot_bgcolor="white"
+    )
+
+    return fig, "Graph reset to the original state."
 
 
 if __name__ == "__main__":

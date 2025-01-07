@@ -339,94 +339,204 @@ def run_ford_fulkerson(n_clicks, source, sink):
     return fig, f"Max Flow from {source} to {sink}: {max_flow}"
 
 @app.callback(
-    [Output("city-map", "figure"), Output("metrics", "children")],
-    [Input("network-dropdown", "value"),
-     Input("prev-step-button", "n_clicks"),
-     Input("next-step-button", "n_clicks")],
+    [Output("city-map", "figure", allow_duplicate=True), Output("metrics", "children", allow_duplicate=True)],
+    [Input("earthquake-button", "n_clicks")],
+    [State("earthquake-node", "value"), State("network-dropdown", "value")],
     prevent_initial_call=True
 )
-def update_visualization(selected_network, prev_clicks, next_clicks):
-    global current_step, total_steps, steps
+def handle_earthquake(n_clicks, damaged_node, selected_network):
+    if n_clicks is None or damaged_node is None:
+        raise PreventUpdate
 
-    # Handle new network selection
-    ctx = dash.callback_context
-    if ctx.triggered and ctx.triggered[0]["prop_id"] == "network-dropdown.value":
-        current_step = 0  # Reset step counter
+    # Initialize Earthquake Event
+    earthquake = smart_city.Earthquake(damaged_node)
+    earthquake.trigger()
 
-        if selected_network == "road":
-            # Visualize Road Network
-            return plot_graph(), "Visualizing the Road Network."
+    fig = go.Figure()
+    metrics = []  # To store metrics for display
 
-        elif selected_network in ["power", "dc"]:
-            # Initialize MST steps for the selected network
-            steps = (
-                smart_city.start_MST_build_power_network()
-                if selected_network == "power"
-                else smart_city.start_MST_build_DC_network()
-            )
-            total_steps = len(steps)
-
-            # Visualize the first step
-            fig = go.Figure()
-            for i in range(len(steps[0])):
-                for j in range(len(steps[0][i])):
-                    if steps[0][i][j] > 0:
+    if selected_network == "road":
+        # Road Network: Visualize Trigger Steps
+        steps = earthquake.get_road_network_trigger_steps()
+        for step_idx, step in enumerate(steps):
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
                         x0, y0 = city_coordinates[i]
                         x1, y1 = city_coordinates[j]
                         fig.add_trace(go.Scatter(
                             x=[x0, x1], y=[y0, y1],
                             mode="lines",
-                            line=dict(color="green" if selected_network == "power" else "purple", width=2),
+                            line=dict(color="orange", width=2),
                             hoverinfo="none"
                         ))
 
-            # Add nodes
-            for node in nodes:
+        # Get Emergency Routes
+        routes = earthquake.get_emergency_routes()
+        for route_idx, route in enumerate(routes):
+            for i in range(len(route) - 1):
+                x0, y0 = city_coordinates[route[i]]
+                x1, y1 = city_coordinates[route[i + 1]]
                 fig.add_trace(go.Scatter(
-                    x=[node["x"]], y=[node["y"]],
-                    mode="markers+text",
-                    marker=dict(size=15, color="skyblue", line=dict(color="black", width=2)),
-                    text=node["label"],
-                    textposition="top center",
-                    hoverinfo="text"
+                    x=[x0, x1], y=[y0, y1],
+                    mode="lines+markers",
+                    line=dict(color="red", width=4),
+                    name=f"Emergency Route {route_idx + 1}"
                 ))
 
-            fig.update_layout(
-                title=f"{selected_network.capitalize()} Network - MST Step 1/{total_steps}",
-                showlegend=False,
-                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                margin=dict(l=10, r=10, t=50, b=10),
-                plot_bgcolor="white"
-            )
-            return fig, "Visualizing Step 1."
+            metrics.append(f"Emergency Route {route_idx + 1}: {route}")
 
-    # Handle Previous/Next Step Button Clicks
-    triggered_id = ctx.triggered[0]["prop_id"].split(".")[0] if ctx.triggered else None
+    elif selected_network == "power":
+        # Power Network: Trigger Steps
+        steps = earthquake.get_power_network_trigger_steps()
+        for step in steps:
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="green", width=2),  # Green for Power Network
+                            hoverinfo="none"
+                        ))
 
-    if triggered_id == "prev-step-button":
-        # Go to the previous step
-        current_step = max(0, current_step - 1)
+        # Handle Steps
+        handle_steps = earthquake.get_power_network_handle_steps()
+        for step in handle_steps:
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="blue", width=2),  # Blue for Power Handling
+                            hoverinfo="none"
+                        ))
 
-    elif triggered_id == "next-step-button":
-        # Go to the next step
-        current_step = min(total_steps - 1, current_step + 1)
+    elif selected_network == "dc":
+        # DC Network: Trigger Steps
+        steps = earthquake.get_DC_network_trigger_steps()
+        for step in steps:
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="purple", width=2),  # Purple for DC Trigger
+                            hoverinfo="none"
+                        ))
 
-    # Visualize the current step
+        # Handle Steps
+        handle_steps = earthquake.get_DC_network_handle_steps()
+        for step in handle_steps:
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        x0, y0 = city_coordinates[i]
+                        x1, y1 = city_coordinates[j]
+                        fig.add_trace(go.Scatter(
+                            x=[x0, x1], y=[y0, y1],
+                            mode="lines",
+                            line=dict(color="blue", width=2),  # Blue for DC Handling
+                            hoverinfo="none"
+                        ))
+
+    # Update layout once
+    fig.update_layout(
+        title=f"Earthquake Visualization - {selected_network.capitalize()} Network",
+        showlegend=False,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        margin=dict(l=10, r=10, t=50, b=10),
+        plot_bgcolor="white"
+    )
+
+    return fig, " | ".join(metrics) if metrics else f"Earthquake Triggered on {selected_network.capitalize()} Network."
+
+@app.callback(
+    [Output("city-map", "figure", allow_duplicate=True), Output("metrics", "children", allow_duplicate=True)],
+    [Input("maintenance-button", "n_clicks")],
+    [State("maintenance-node", "value"), State("network-dropdown", "value")],
+    prevent_initial_call=True
+)
+def handle_maintenance(n_clicks, damaged_node, selected_network):
+    global all_maintenance_edges  # Store all maintenance-affected edges globally
+
+    if n_clicks is None or damaged_node is None:
+        raise PreventUpdate
+
+    # Ensure Maintenance is only triggered on valid networks
+    if selected_network not in ["power", "dc"]:
+        return plot_graph(), "Maintenance can only be triggered on Power or Datacenters Networks."
+
+    # Initialize Maintenance Event
+    maintenance = smart_city.Maintenance(damaged_node)
+    maintenance.trigger()
+
+    if 'all_maintenance_edges' not in globals():
+        all_maintenance_edges = []  # Initialize if not already defined
+
+    # Add new maintenance edges to the global list
+    new_maintenance_edges = []
+
+    if selected_network == "power":
+        steps = maintenance.get_power_network_trigger_steps()
+        for step in steps:
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        new_maintenance_edges.append((i, j))
+
+    elif selected_network == "dc":
+        steps = maintenance.get_DC_network_trigger_steps()
+        for step in steps:
+            for i in range(len(step)):
+                for j in range(len(step[i])):
+                    if step[i][j] > 0:
+                        new_maintenance_edges.append((i, j))
+
+    all_maintenance_edges.extend(new_maintenance_edges)
+    all_maintenance_edges = list(set(all_maintenance_edges))  # Remove duplicates
+
     fig = go.Figure()
-    for i in range(len(steps[current_step])):
-        for j in range(len(steps[current_step][i])):
-            if steps[current_step][i][j] > 0:
+
+    # Plot all edges as light gray for the base graph
+    if selected_network == "power":
+        network = maintenance.get_power_network()
+    elif selected_network == "dc":
+        network = maintenance.get_DC_network()
+
+    for i, row in enumerate(network):
+        for j, weight in enumerate(row):
+            if weight > 0:
                 x0, y0 = city_coordinates[i]
                 x1, y1 = city_coordinates[j]
                 fig.add_trace(go.Scatter(
                     x=[x0, x1], y=[y0, y1],
                     mode="lines",
-                    line=dict(color="green" if selected_network == "power" else "purple", width=2),
+                    line=dict(color="gray", width=1),  # Light gray edges
                     hoverinfo="none"
                 ))
 
-    # Add nodes
+    # Highlight all maintenance-affected edges in orange
+    for edge in all_maintenance_edges:
+        x0, y0 = city_coordinates[edge[0]]
+        x1, y1 = city_coordinates[edge[1]]
+        fig.add_trace(go.Scatter(
+            x=[x0, x1], y=[y0, y1],
+            mode="lines",
+            line=dict(color="orange", width=2),  # Highlight maintenance edges
+            hoverinfo="none"
+        ))
+
+    # Add all nodes to the graph to ensure they remain visible
     for node in nodes:
         fig.add_trace(go.Scatter(
             x=[node["x"]], y=[node["y"]],
@@ -438,7 +548,7 @@ def update_visualization(selected_network, prev_clicks, next_clicks):
         ))
 
     fig.update_layout(
-        title=f"{selected_network.capitalize()} Network - MST Step {current_step + 1}/{total_steps}",
+        title=f"Maintenance Visualization - {selected_network.capitalize()} Network",
         showlegend=False,
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
@@ -446,10 +556,53 @@ def update_visualization(selected_network, prev_clicks, next_clicks):
         plot_bgcolor="white"
     )
 
-    return fig, f"Visualizing Step {current_step + 1}/{total_steps}."
+    return fig, f"Maintenance Triggered at Node {damaged_node}."
 
 
 
+@app.callback(
+    [Output("city-map", "figure", allow_duplicate=True), Output("metrics", "children", allow_duplicate=True)],
+    [Input("traffic-button", "n_clicks")],
+    [State("traffic-node", "value"), State("network-dropdown", "value")],
+    prevent_initial_call=True
+)
+def handle_traffic_congestion(n_clicks, congested_node, selected_network):
+    if n_clicks is None or congested_node is None:
+        raise PreventUpdate
 
+    # Initialize Traffic Congestion Event
+    traffic = smart_city.TrafficCongestion(congested_node)
+    traffic.trigger()
+
+    if selected_network != "road":
+        return plot_graph(), "Traffic Congestion only affects the Road Network."
+
+    fig = go.Figure()
+
+    # Visualize the increased weights
+    for i in range(len(road_network)):
+        if road_network[congested_node][i] > 0:
+            x0, y0 = city_coordinates[congested_node]
+            x1, y1 = city_coordinates[i]
+            fig.add_trace(go.Scatter(
+                x=[x0, x1], y=[y0, y1],
+                mode="lines",
+                line=dict(color="red", width=2),  # Highlight congested edges
+                hoverinfo="none"
+            ))
+
+    fig.update_layout(
+        title="Traffic Congestion Visualization - Road Network",
+        showlegend=False,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        margin=dict(l=10, r=10, t=50, b=10),
+        plot_bgcolor="white"
+    )
+
+    return fig, f"Traffic Congestion Triggered at Node {congested_node}."
+
+
+# GPT offer a coulerd one
 if __name__ == "__main__":
     app.run_server(debug=True)
