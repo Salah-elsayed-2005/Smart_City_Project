@@ -2,9 +2,12 @@
 #include <vector>
 #include <cmath>
 #include "CityMap.h"
-#include "MST.h"
 #include "A_Star.h"
+#include "FordFulkerson.h"
 #include "Emergency_Floyd.h"
+#include "MST.h"
+
+
 #include "EventHandler.h"
 
 vector<vector<int>> modified_road_network = road_network;
@@ -41,37 +44,74 @@ vector<vector<int>> makeEdgeList(vector<vector<int>> &graph){
 }
 
 void Earthquake::trigger() {
+    ///////////// they aren't initialized on my environment (By : @salah)
+    modified_road_network = road_network;
+    modified_power_network = power_network;
+    modified_DC_network = DC_network;
+    modified_road_network_capacity = road_network_capacity;
+    modified_power_network_capacity = power_network_capacity;
+    modified_DC_network_capacity = DC_network_capacity;
     /* Initialize with the original graph */
     road_network_trigger_steps.push_back(modified_road_network);
     power_network_trigger_steps.push_back(modified_power_network);
     DC_network_trigger_steps.push_back(modified_DC_network);
-    modified_road_network = road_network;
+
     /* Cut half the connections to the damaged node */
     int nof_damaged_edges = (int)round(getEdges(modified_road_network, damaged_node) / 2.0);
 
-    for(int i = 0; i < nof_damaged_edges;){
-        if(modified_road_network[damaged_node][i] != 0){
-
+    int count = nof_damaged_edges;
+    int i=0;
+    while (count){
+        if (modified_road_network[i][damaged_node]){
             modified_road_network[damaged_node][i] = 0;
             modified_road_network_capacity[damaged_node][i] = 0;
             modified_road_network[i][damaged_node] = 0;
             modified_road_network_capacity[i][damaged_node] = 0;
 
+            road_network_trigger_steps.push_back(modified_road_network);
+            count--;
+        }
+
+
+        i++;
+    }
+
+
+    nof_damaged_edges = (int)round(getEdges(modified_power_network, damaged_node) / 2.0);
+    count = nof_damaged_edges;
+    i=0;
+    while (count){
+        if (modified_power_network[i][damaged_node]){
             modified_power_network[damaged_node][i] = 0;
-            modified_power_network[i][damaged_node] = 0;
             modified_power_network_capacity[damaged_node][i] = 0;
+            modified_power_network[i][damaged_node] = 0;
             modified_power_network_capacity[i][damaged_node] = 0;
 
+            power_network_trigger_steps.push_back(modified_power_network);
+            count--;
+        }
+
+
+        i++;
+    }
+
+
+    nof_damaged_edges = (int)round(getEdges(modified_DC_network, damaged_node) / 2.0);
+    count = nof_damaged_edges;
+    i=0;
+    while (count){
+        if (modified_DC_network[i][damaged_node]){
             modified_DC_network[damaged_node][i] = 0;
-            modified_DC_network[i][damaged_node] = 0;
             modified_DC_network_capacity[damaged_node][i] = 0;
+            modified_DC_network[i][damaged_node] = 0;
             modified_DC_network_capacity[i][damaged_node] = 0;
 
-            road_network_trigger_steps.push_back(modified_road_network);
-            power_network_trigger_steps.push_back(modified_power_network);
             DC_network_trigger_steps.push_back(modified_DC_network);
-            i++;
+            count--;
         }
+
+
+        i++;
     }
 
 }
