@@ -45,7 +45,7 @@ void Earthquake::trigger() {
     road_network_trigger_steps.push_back(modified_road_network);
     power_network_trigger_steps.push_back(modified_power_network);
     DC_network_trigger_steps.push_back(modified_DC_network);
-
+    modified_road_network = road_network;
     /* Cut half the connections to the damaged node */
     int nof_damaged_edges = (int)round(getEdges(modified_road_network, damaged_node) / 2.0);
 
@@ -70,7 +70,6 @@ void Earthquake::trigger() {
             road_network_trigger_steps.push_back(modified_road_network);
             power_network_trigger_steps.push_back(modified_power_network);
             DC_network_trigger_steps.push_back(modified_DC_network);
-
             i++;
         }
     }
