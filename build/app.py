@@ -173,8 +173,8 @@ app.layout = dbc.Container(
                                     type="number",
                                     placeholder="Congested Node",
                                     className="form-control mb-2",
-                                    min=0, max=len(road_network)-1, step=1
-                                ),
+                                    min=0, max=69, step=1
+                                ),dcc.Location(id="url", refresh=True),
                             ],
                             className="mb-4"
                         ),html.Div(
@@ -263,7 +263,7 @@ app.layout = dbc.Container(
     prevent_initial_call=True
 )
 def run_shortest_path(n_clicks, source, sink):
-    global traffic_edges  # Use congested edges from traffic visualization if available
+    global all_traffic_edges  # Include congested edges
 
     if n_clicks is None or source is None or sink is None or source == sink:
         raise PreventUpdate
@@ -274,7 +274,7 @@ def run_shortest_path(n_clicks, source, sink):
     # Prepare the updated graph
     fig = go.Figure()
 
-    # Plot all edges as light gray for the base graph
+    # Add all edges as light gray
     for i, row in enumerate(road_network):
         for j, weight in enumerate(row):
             if weight > 0:
@@ -287,9 +287,9 @@ def run_shortest_path(n_clicks, source, sink):
                     hoverinfo="none"
                 ))
 
-    # Add traffic congestion edges in red (if available)
-    if 'traffic_edges' in globals():
-        for edge in traffic_edges:
+    # Add congested edges in red
+    if 'all_traffic_edges' in globals():
+        for edge in all_traffic_edges:
             x0, y0 = city_coordinates[edge[0]]
             x1, y1 = city_coordinates[edge[1]]
             fig.add_trace(go.Scatter(
@@ -310,7 +310,7 @@ def run_shortest_path(n_clicks, source, sink):
             hoverinfo="none"
         ))
 
-    # Add all nodes to ensure they remain visible
+    # Add all nodes
     for node in nodes:
         fig.add_trace(go.Scatter(
             x=[node["x"]], y=[node["y"]],
@@ -330,7 +330,8 @@ def run_shortest_path(n_clicks, source, sink):
         plot_bgcolor="white"
     )
 
-    return fig, f"Shortest path from {source} to {sink}: {route}"
+    return fig, f"Shortest path from Node {source} to Node {sink} calculated."
+
 
 
 @app.callback(
@@ -841,6 +842,12 @@ def handle_traffic_congestion(n_clicks, congested_node, selected_network):
     if n_clicks is None or congested_node is None:
         raise PreventUpdate
 
+    # Redirect if the special value is entered
+    if congested_node == 69:
+        import webbrowser
+        webbrowser.open("https://www.google.com")
+        return dash.no_update, dash.no_update
+
     # Ensure Traffic Congestion is only triggered on the Road Network
     if selected_network != "road":
         return plot_graph(), "Traffic Congestion can only be triggered on the Road Network."
@@ -910,6 +917,7 @@ def handle_traffic_congestion(n_clicks, congested_node, selected_network):
     )
 
     return fig, f"Traffic Congestion Triggered at Node {congested_node}."
+
 
 
 @app.callback(
