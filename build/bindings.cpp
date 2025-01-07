@@ -22,6 +22,9 @@ PYBIND11_MODULE(smart_city, m) {
     // Expose road network
     m.def("get_road_network", &get_road_network, "Get the road network as a list of lists");
 
+    m.def("boom_boom", &boomboom, "Revert to the original graph");
+
+
     // Expose city coordinates
     m.def("get_city_coordinates", &get_city_coordinates_python, "Get city coordinates as a list of (x, y) pairs");
 

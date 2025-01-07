@@ -58,3 +58,12 @@ printFord start_ford_fulkerson(vector<vector<int> > cap,int source,int sink){
     toreturn.flow= ford_fulkerson(cap,source, sink).first;
     return toreturn;
 }
+
+void boomboom(){
+    modified_road_network_capacity=road_network_capacity;
+    modified_DC_network_capacity=DC_network_capacity;
+    modified_power_network_capacity=power_network_capacity;
+    modified_road_network=road_network;
+    modified_DC_network=DC_network;
+    modified_power_network=power_network;
+}

@@ -22,6 +22,9 @@ PYBIND11_MODULE(smart_city, m) {
     // Expose road network
     m.def("get_road_network", &get_road_network, "Get the road network as a list of lists");
 
+    m.def("boom_boom", &boomboom, "Revert to the original graph");
+
+
     // Expose city coordinates
     m.def("get_city_coordinates", &get_city_coordinates_python, "Get city coordinates as a list of (x, y) pairs");
 
@@ -37,24 +40,31 @@ PYBIND11_MODULE(smart_city, m) {
 
     // Expose event handling classes
     py::class_<Earthquake, Event, std::shared_ptr<Earthquake>>(m, "Earthquake")            .def(py::init<int>())
-            .def("trigger", &Earthquake::trigger)
+            .def("trigger", &Earthquake::trigger) // call this
             .def("handle", &Earthquake::handle)
-            .def("get_road_network_trigger_steps", &Earthquake::get_road_network_trigger_steps)
-            .def("get_power_network_trigger_steps", &Earthquake::get_power_network_trigger_steps)
-            .def("get_DC_network_trigger_steps", &Earthquake::get_DC_network_trigger_steps)
-            .def("get_power_network_handle_steps", &Earthquake::get_power_network_handle_steps)
-            .def("get_DC_network_handle_steps", &Earthquake::get_DC_network_handle_steps)
-            .def("get_emergency_routes", &Earthquake::get_emergency_routes);
 
+            .def("get_road_network_trigger_steps", &Earthquake::get_road_network_trigger_steps) //steps for road
+            .def("get_power_network_trigger_steps", &Earthquake::get_power_network_trigger_steps) //steps for pow
+            .def("get_DC_network_trigger_steps", &Earthquake::get_DC_network_trigger_steps) //steps for dc
+
+            .def("get_power_network_handle_steps", &Earthquake::get_power_network_handle_steps) // steps building for pow
+            .def("get_DC_network_handle_steps", &Earthquake::get_DC_network_handle_steps) // steps building for dc
+
+            .def("get_emergency_routes", &Earthquake::get_emergency_routes); // 3 steps
+
+
+    //SAME ^
     py::class_<Maintenance, Event, std::shared_ptr<Maintenance>>(m, "Maintenance")
             .def(py::init<int>())
             .def("trigger", &Maintenance::trigger)
             .def("handle", &Maintenance::handle)
-            .def("get_road_network_trigger_steps", &Maintenance::get_road_network_trigger_steps)
+
             .def("get_power_network_trigger_steps", &Maintenance::get_power_network_trigger_steps)
             .def("get_DC_network_trigger_steps", &Maintenance::get_DC_network_trigger_steps)
+
             .def("get_power_network_handle_steps", &Maintenance::get_power_network_handle_steps)
             .def("get_DC_network_handle_steps", &Maintenance::get_DC_network_handle_steps);
+
 
     py::class_<TrafficCongestion, Event, std::shared_ptr<TrafficCongestion>>(m, "TrafficCongestion")
             .def(py::init<int>())

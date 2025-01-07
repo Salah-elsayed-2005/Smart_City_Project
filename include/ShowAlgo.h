@@ -28,4 +28,6 @@ public:
 };
 printFord start_ford_fulkerson(vector<vector<int> > cap,int source,int sink);
 
+void boomboom();
+
 #endif //SMART_CITY_PROJECT_SHOWALGO_H
