@@ -5,7 +5,7 @@ ext_modules = [
     Pybind11Extension(
         "smart_city",
         [
-            "../bindings.cpp",
+            "bindings.cpp",
             "../CityMap.cpp",
             "../FordFulkerson.cpp",
             "../MST.cpp",
@@ -13,7 +13,7 @@ ext_modules = [
             "../EventHandler.cpp",
             "../ShowAlgo.cpp"
         ],
-        include_dirs=["../include"],  # Adjust paths as needed
+        include_dirs=["../include", ".."],  # Adjust paths as needed
     ),
 ]
 
